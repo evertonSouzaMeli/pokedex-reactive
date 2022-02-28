@@ -10,12 +10,12 @@ public interface PokemonRepository extends ReactiveMongoRepository<Pokemon, Stri
 
     default Mono<Pokemon> update(String id, Pokemon pokemon){
         Mono<Pokemon> result = findById(id);
-        return result.map(pkmn -> {
+        return result.flatMap(pkmn -> {
             pkmn.setNome(pokemon.getNome());
             pkmn.setCategoria(pokemon.getCategoria());
             pkmn.setHabilidade(pokemon.getHabilidade());
             pkmn.setPeso(pokemon.getPeso());
-            return pkmn;
+            return save(pkmn);
         });
     }
 }

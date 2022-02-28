@@ -1,12 +1,16 @@
 package br.com.meli.pokedexreactive.controller;
 
 import br.com.meli.pokedexreactive.model.Pokemon;
+import br.com.meli.pokedexreactive.model.PokemonEvent;
 import br.com.meli.pokedexreactive.repository.PokemonRepository;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.time.Duration;
 
 @RestController
 @RequestMapping("/pokemon")
@@ -48,6 +52,12 @@ public class PokemonController {
                 existingPokemon -> pokemonRepository.delete(existingPokemon)
                         .then(Mono.just(ResponseEntity.ok().<Void>build()))
         ).defaultIfEmpty(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping(value = "/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<PokemonEvent> getPokemonEvents(){
+        return Flux.interval(Duration.ofSeconds(5))
+                .map(value -> new PokemonEvent(value, "Evento de Pokemon"));
     }
 
     @GetMapping("/ping")
